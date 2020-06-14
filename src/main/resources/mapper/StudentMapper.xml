@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zqg.mapper.StudentMapper">
+
+    <cache/>
+    <insert id="insert"  parameterType="student" keyProperty="id"
+            useGeneratedKeys="true">
+        INSERT INTO student (stuname,gradeid,picture) VALUES(#{stuName},#{gradeId},#{picture})
+    </insert>
+
+    <select id="selectStudent" resultType="Student">
+        select  * from student;
+
+    </select>
+<resultMap id="studentinfo" type="student">
+       <id column="stuid" property="id"></id>
+      <result column="stuname" property="stuName"></result>
+      <result column="stugradeid" property="gradeId"></result>
+      <result column="picture" property="picture"></result>
+      <association property="grade" column="stugradeid" javaType="com.zqg.po.Grade"  >
+          <id column="grade_id" property="id"></id>
+          <result column="gradename" property="gradeName"></result>
+      </association>
+</resultMap>
+
+    <select id="selectStudentinfo" resultMap="studentinfo">
+
+SELECT
+	student.id stuid,
+	student.stuname,
+	student.gradeid stugradeid,
+	student.picture,
+	grade.id grade_id,
+	grade.gradename
+FROM
+	student
+LEFT JOIN grade ON grade.id = student.gradeId
+
+
+    </select>
+
+<!--    动态sql -->
+<!--    where -->
+
+<!--最好是单表测试-->
+    <sql id="sql_test">
+        <if test="stuName!=null and stuName !=''">
+            and stuname ='${stuName}'
+        </if>
+        <if test="id !=null and id !=''">
+            and id =${id}
+        </if>
+
+    </sql>
+
+    <select id="selectStudentSql" resultType="student" parameterType="student">
+
+        select  * from student
+<!--        where 块会自动的去掉第一个 and -->
+    <where>
+        <include refid="sql_test"></include>
+    </where>
+
+
+    </select>
+
+
+<!--    select  * from student where id =3 or  id =4 or id =5 or id =6-->
+<select id="selectforeach" resultType="student" parameterType="list">
+    select * from student
+   <where>
+       <if test="list!=null">
+       <foreach collection="list" item="id" separator="or">
+           id=${id}
+       </foreach>
+       </if>
+   </where>
+</select>
+
+    <select id="selectin" resultType="student" parameterType="list">
+        select  * from  student
+        <where>
+            <if test="list!=null">
+                <foreach collection="list" item="id" separator="," open="id in  (" close=" )">
+                    ${id}
+
+
+                </foreach>
+
+
+            </if>
+
+        </where>
+
+
+    </select>
+
+
+    <resultMap id="studentsele" type="student">
+        <id column="id" property="id"/>
+        <result column="stuname" property="stuName"/>
+        <result column="gradeid" property="gradeId"/>
+        <result column="picture" property="picture"></result>
+        <association property="grade" column="gradeid"
+
+                     javaType="grade" select="com.zqg.mapper.GradeMapper.selectGradeById" >
+
+        </association>
+    </resultMap>
+
+    <select id="associationSelect" resultMap="studentsele">
+        select  * from student
+    </select>
+
+
+<!--针对这个查询禁用缓存 针对每次查询都需要最新的数据sql 要设置禁用缓存 useCache="false"
+   刷新缓存就是清空缓存，
+   一般情况下执行完了，commit 操作都需要刷新缓存，flushcache = true
+   表示刷新缓存，这样可以避免数据脏读
+
+-->
+    <select id="selectStudentById" parameterType="int"
+            resultMap="studentsele"
+    >
+
+        select  * from student  where id =${id}
+
+
+    </select>
+
+
+
+    <update id="updateStudent" parameterType="student" >
+
+
+UPDATE student
+SET stuname = #{stuName},
+ gradeid = #{gradeId},
+ picture = #{picture}
+WHERE
+	id = #{id}
+
+
+
+
+
+
+    </update>
+
+
+
+
+</mapper>
+
+
+

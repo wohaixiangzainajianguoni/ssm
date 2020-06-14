@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                 http://www.springframework.org/schema/mvc
+                 http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                 http://www.springframework.org/schema/context
+                 http://www.springframework.org/schema/context/spring-context.xsd
+                 http://www.springframework.org/schema/aop
+                 http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                 http://www.springframework.org/schema/tx
+                 http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+<!--注解组件扫描，可以扫描controller和 service
+指定多个包，多个包使用,隔开
+-->
+    <context:component-scan base-package="com.zqg.controller"></context:component-scan>
+<!--    处理器映射器-->
+<!--    处理器适配器-->
+    <mvc:annotation-driven />
+
+    <mvc:resources location="/resource" mapping="/**/*.html"/>
+
+    <mvc:resources location="/resource" mapping="/**/*.js"/>
+
+    <mvc:resources location="/resource" mapping="/**/*.css"/>
+
+    <mvc:resources location="/resource" mapping="/**/*.png"/>
+
+    <mvc:resources location="/resource" mapping="/**/*.jpg"/>
+
+    <mvc:resources location="/resource" mapping="/**/*.gif"/>
+
+
+
+
+
+
+
+<!--    视图解析器  默认使用jstl-->
+
+ <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+     <property name="prefix" value="/WEB-INF/jsps/"></property>
+     <property name="suffix" value=".jsp"></property>
+ </bean>
+
+<!--    文件上传解析器-->
+    <bean
+            id="multipartResolver"
+            class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+<property name="maxUploadSize">
+    <value>5242880</value>
+
+</property>
+
+        <property name="defaultEncoding"
+value="UTF-8"></property>    </bean>
+
+
+<!--配置全局异常处理器
+只要实现了 HandlerExceptionResolver 就是全局异常处理器
+只能有一个
+-->
+
+
+
+    <bean class="com.zqg.handler.CustomExceptionHandler"></bean>
+
+
+
+</beans>

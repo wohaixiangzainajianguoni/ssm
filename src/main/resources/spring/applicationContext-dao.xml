@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                 http://www.springframework.org/schema/mvc
+                 http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+                 http://www.springframework.org/schema/context
+                 http://www.springframework.org/schema/context/spring-context.xsd
+                 http://www.springframework.org/schema/aop
+                 http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                 http://www.springframework.org/schema/tx
+                 http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+
+   <context:component-scan base-package="com.zqg.service.serviceImpl"></context:component-scan>
+
+
+
+    <context:property-placeholder location="classpath:db.properties"></context:property-placeholder>
+<!--    &lt;!&ndash;    配置数据源&ndash;&gt;-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="${driver}"></property>
+        <property name="url" value="${url}"></property>
+        <property name="username" value="${username}"></property>
+        <property name="password" value="${password}"></property>
+        <property name="maxActive" value="10"></property>
+        <property name="maxIdle" value="5"></property>
+    </bean>
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+<!---->
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+    </bean>
+
+    <!--工厂方法为mapper生成代理对象,存在的问题就是每次需要配置太多东西-->
+    <!--    <bean id="gradeMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+    <!--        <property name="mapperInterface" value="com.zqg.ssm.mapper.GradeMapper"></property>-->
+    <!--        <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>-->
+    <!--    </bean>-->
+<!---->
+    <!--    批量扫描为mapper生成对象,这里添加扫描后， 在 mybaties配置文件中的
+    <mappers> <package name="com.zqg.mapper"/></mappers> 也就不在需要了
+    不过需要遵循同样的规范
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--        如果扫描多个包，不能使用通配符
+        多个包使用半角逗号分隔
+        -->
+        <property name="basePackage" value="com.zqg.mapper"></property>
+        <!--        这样配置会导致db.properties文件引入失败
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+        -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+<!---->
+<!---->
+</beans>
